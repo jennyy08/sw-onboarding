@@ -104,7 +104,7 @@ trap cleanup EXIT
 CHECK_ATTEMPTS=0
 until curl -sf http://localhost:8001/api/main-commands/ >/dev/null 2>&1; do
   CHECK_ATTEMPTS=$((CHECK_ATTEMPTS + 1))
-  if [ "$CHECK_ATTEMPTS" -gt 10 ]; then
+  if [ "$CHECK_ATTEMPTS" -gt 30 ]; then
     echo "---- backend log ----"
     cat /tmp/sw-onboarding-log || true
     fail "Backend did not respond at http://localhost:8001/api/main-commands/. See log above."
