@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.api.schemas.responses import CommandHistoryResponse
 from app.database.dal import DAL
@@ -23,5 +23,13 @@ async def get_command_history(command_id: UUID, command_history: CommandHistoryR
     :raises HTTPException: 404 if the command has no history entries. A deleted command still has
         history, so check the history table, not the commands table.
     """
-    # TODO: (STEP 2) Implement this stub!
-    return CommandHistoryResponse(data=[])
+
+    history = await command_history.get_history_by_id(command_id)
+
+    if not history:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No history entries were found for the command {command_id}",
+        )
+
+    return CommandHistoryResponse(data=history)

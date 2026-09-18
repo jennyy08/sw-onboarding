@@ -1,6 +1,9 @@
 from uuid import UUID
 
+from sqlmodel import desc, select
+
 from app.database.abstract_repository import AbstractRepository
+from app.database.engine import get_db_session
 from app.database.models import Command, CommandHistory, MainCommand
 
 
@@ -31,5 +34,14 @@ class CommandHistoryRepository(AbstractRepository[CommandHistory, UUID]):
         """
         Get the entire history of a command by its UUID, sorted by latest first.
         """
-        # TODO: (STEP 1) Implement this stub!
+        statement = (
+            select(CommandHistory)
+            .where(CommandHistory.command_id == command_id)
+            .order_by(desc(CommandHistory.created_at))
+        )
+
+        async with get_db_session() as session:
+            result = await session.exec(statement)
+            return list(result.all())
+
         return []
